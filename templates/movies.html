@@ -1,0 +1,37 @@
+
+
+{% block movies %}
+
+	{# edit movie modal #}
+
+	{% if movies|length > 0 %}
+	<h2 class="total"> Total Movies : {{ movies|length }} </h2>
+	{% endif %}
+	<div class="columns is-multiline">
+		{% for movie in movies %}
+			<div class="column is-one-quarter">
+				<div class="card">
+					<div class="card-image">
+						<figure class="image is-4by3">
+							<img src="https://www.theprintworks.com/wp-content/themes/psBella/assets/img/film-poster-placeholder.png" alt="Placeholder image">
+						</figure>
+					</div>
+					<div class="card-content">
+						<div class="media">
+							<div class="media-content">
+								<p class="title is-4">{{ movie.title }}</p>
+								<p class="subtitle is-6"><small>Released: {{ movie.release_date }}</small></p>
+							</div>
+						</div>
+					</div>
+					<footer class="card-footer">
+						<a class="card-footer-item modal-button editMovieButton" data-target="#editMovieModal"
+						   aria-haspopup="true" onclick="setFormValues('editMovieForm', {{movie}})"
+						>Edit</a>
+						<a class="card-footer-item deleteMovieButton" onclick="deleteMovie({{ movie.id }})">Delete</a>
+					</footer>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}

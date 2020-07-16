@@ -1,0 +1,40 @@
+
+{% block actors %}
+		{% if actors|length > 0 %}
+		<h2 class="total"> Total Actors : {{ actors|length }} </h2>
+		{% endif %}
+	{# edit actor modal #}
+
+	
+	<div class="columns is-multiline">
+		{% for actor in actors %}
+		 {% set icon ='https://icons.iconarchive.com/icons/google/noto-emoji-people-face/48/10159-woman-light-skin-tone-icon.png' %}
+		  	{% if actor.gender =='M' %}
+		  		{%set icon='https://icons.iconarchive.com/icons/google/noto-emoji-people-face/48/10147-adult-light-skin-tone-icon.png' %}
+			
+			{% endif %}
+			  <div class="column is-one-quarter">
+				<div class="card">
+					<div class="card-content">
+						<div class="media">
+				      <div class="media-left">
+				        <figure class="image is-48x48">
+				          <img src={{ icon }} alt="Placeholder image">
+				        </figure>
+				      </div>
+				      <div class="media-content">
+				        <p class="title is-4">{{ actor.name }}</p>
+				        <p class="subtitle is-6"><small>Gender: {{ actor.gender }}</small></p>
+				      </div>
+						</div>
+					</div>
+					<footer class="card-footer">
+				    <a class="editActorButton card-footer-item modal-button" data-target="#editActorModal"
+						   aria-haspopup="true" onclick="setFormValues('editActorForm', {{actor}})">Edit</a>
+				    <a class="deleteActorButton card-footer-item" onclick="deleteActor({{ actor.id }})">Delete</a>
+				  </footer>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}

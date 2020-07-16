@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Casting Agency</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"
+	        integrity="sha256-321PxS+POvbvWcIVoRZeRmf32q7fTFQJ21bXwTNWREY=" crossorigin="anonymous"></script>
+
+	<style>
+		.navbar{
+			border-bottom: 2px solid gray;
+		}
+		.lists{
+			text-decoration-line: underline;
+		}
+		.button.is-primary {
+			background-color: #141d1c;
+		}
+		.modal{
+			padding-top: 100px;
+		}
+		.modal-close{
+			background-color: red;
+		}
+		.total {
+			margin: 25px;
+			text-align: center;
+			color: #ff7b1d;
+			font-size: 24px;
+		}
+	</style>		
+</head>
+<body>
+
+{% set LoginUrl ='https://dev-alamin.us.auth0.com/authorize?audience=movie-agency&response_type=token&client_id=5c1se3IHIeuf20oP56zkYn0Noh9ZYgyZ&redirect_uri=http://localhost:8080/headers' %}
+{% set LogoutUrl ='https://dev-wsb8jitr.auth0.com/authorize?audience=casting_agency&response_type=token&client_id=K33oU7fu27mImUnefrOzLjNIikd2e72b&redirect_uri=https://udacity-casting-agency.herokuapp.com' %}
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+	<div id="" class="navbar-menu">
+		<div class="navbar-end">
+			
+					<a class="navbar-item lists" href="/movie-list" id="movieLink">
+						Movies
+					</a>
+					<a class="navbar-item lists" href="/actor-list" id="actorLink">
+						Actors
+					</a>
+			
+			
+			<div class="navbar-item action">
+				<div class="buttons">
+					<a id="loginButton" class="button is-primary" href="/login">
+						<strong>Log in</strong>
+					</a>
+					<a id="addActorButton" class="button is-primary modal-button" data-target="#actorModal" aria-haspopup="true">
+						<strong>Add actor</strong>
+					</a>
+					<a id="addMovieButton" class="button is-primary modal-button" data-target="#movieModal" aria-haspopup="true">
+						<strong>Add movie</strong>
+					</a>
+					<a id="logoutButton" class="button is-primary" onclick="logOut()">
+						<strong>Log out</strong>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</nav>
+
+<div class="container is-fluid">
+
+	{# modals #}
+	<input type="hidden" id="logout" value="{{ LogoutUrl }}">
+	{# add actor modal #}
+	<div class="modal" id="actorModal">
+		<div class="modal-background"></div>
+		<div class="modal-content">
+			<form class="box" onsubmit="event.preventDefault(); submitActor()" id="actorForm">
+				<div class="field">
+					<label class="label">Name</label>
+					<div class="control">
+						<input class="input" required type="text" placeholder="Actor's name" name="name">
+					</div>
+				</div>
+				<div class="field">
+					<div class="control">
+						<label class="radio">
+							<input type="radio" required name="gender" value="M">
+							Male
+						</label>
+						<label class="radio">
+							<input type="radio" required name="gender" value="F">
+							Female
+						</label>
+					</div>
+					<br>
+					<div class="field is-grouped">
+						<div class="control">
+							<button class="button is-primary">
+								<strong>Submit</strong>
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<button onclick="closemodal()"  class="modal-close is-large" aria-label="close"></button>
+	</div>
+
+	{# add movie modal #}
+	<div class="modal" id="movieModal">
+		<div class="modal-background"></div>
+		<div class="modal-content">
+			<form class="box" onsubmit="event.preventDefault(); submitMovie()" id="movieForm">
+				<div class="field">
+					<label class="label">Title</label>
+					<div class="control">
+						<input class="input" required type="text" placeholder="Movie's title" name="title">
+					</div>
+				</div>
+				<div class="field">
+					<label class="label">Release date</label>
+					<div class="control">
+						<input class="input" style="width: 162px;" required type="date" name="release_date">
+					</div>
+					<br>
+					<div class="field is-grouped">
+						<div class="control">
+							<button class="button is-primary">
+								<strong>Submit</strong>
+							</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<button onclick="closemodal()"  class="modal-close is-large" aria-label="close"></button>
+	</div>
+
+	{# extended pages	#}
+
+
+		<div class="modal" id="editMovieModal">
+			<div class="modal-background"></div>
+			<div class="modal-content">
+				<form class="box" onsubmit="event.preventDefault(); editMovie()" id="editMovieForm">
+					<input type="hidden" id="editMovieForm_id" name="id">
+					<div class="field">
+						<label class="label">Title</label>
+						<div class="control">
+							<input id="editMovieForm_title" class="input" type="text" placeholder="Movie's title" name="title">
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">Release date</label>
+						<div class="control">
+							<input  id="editMovieForm_release_date" class="input" type="date" name="release_date">
+						</div>
+						<br>
+						<div class="field is-grouped">
+							<div class="control">
+								<button class="button is-primary">
+									<strong>Submit</strong>
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<button onclick="closemodal()"  class="modal-close is-large" aria-label="close"></button>
+		</div>
+		
+		<div class="modal" id="editActorModal">
+			<div class="modal-background"></div>
+			<div class="modal-content">
+				<form name ="editActorForm" class="box" onsubmit="event.preventDefault(); editActor()" id="editActorForm">
+					<input type="hidden" name="id">
+					<div class="field">
+						<label class="label">Name</label>
+						<div class="control">
+							<input id="editActorForm_id" class="input" type="text" placeholder="Actor's name" name="name">
+						</div>
+					</div>
+					<div class="field">
+						<div class="control">
+							<label class="radio">
+								<input id="editActorForm_id" type="radio" name="gender" value="M">
+								Male
+							</label>
+							<label class="radio">
+								<input type="radio" name="gender" value="F">
+								Female
+							</label>
+						</div>
+						<br>
+						<div class="field is-grouped">
+							<div class="control">
+								<button class="button is-primary">
+									<strong>Submit</strong>
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<button onclick="closemodal()" class="modal-close is-large" aria-label="close"></button>
+		</div>
+	<div id="content">
+		
+			{% block index %}{% endblock %}
+			{% block login %}{% endblock %}
+			{% block movies %}{% endblock %}
+			{% block actors %}{% endblock %}
+
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
