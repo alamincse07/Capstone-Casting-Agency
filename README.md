@@ -2,7 +2,7 @@
 
 Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies.
 
-Hosted on heroku. [Link](https://herokuapp.com/).
+Hosted on heroku. [Link](https://alamin-casting-agency.herokuapp.com/).
 
 ## Motivation
 
