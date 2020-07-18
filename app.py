@@ -20,6 +20,7 @@ AUTH0_CLIENT_ID = os.getenv('Client_ID')
 AUTH0_CLIENT_SECRET = os.getenv('Client_SECRET')
 AUTH0_BASE_URL = os.getenv('AUTH0_BASE_URL')
 AUTH0_AUDIENCE = os.getenv('API_AUDIENCE')
+AUTH0_CALLBACK_URL = os.getenv('AUTH0_CALLBACK_URL')
 
 
 @app.after_request
@@ -39,7 +40,7 @@ auth0 = oauth.register(
     access_token_url=AUTH0_BASE_URL + '/oauth/token',
     authorize_url=AUTH0_BASE_URL + '/authorize',
     client_kwargs={
-        'scope': 'openid profile email',
+        'scope': 'openid',
     },
 )
 
@@ -51,8 +52,6 @@ def index():
 
 @app.route('/login')
 def login():
-    # AUTH0_CALLBACK_URL = url_for('headers', _external=True)
-    AUTH0_CALLBACK_URL = 'http://localhost:8080/'
     return auth0.authorize_redirect(redirect_uri=AUTH0_CALLBACK_URL, audience=AUTH0_AUDIENCE, response_type='token')
 
 
@@ -62,20 +61,10 @@ def logout():
     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
 
-@app.route('/headers')
-def headers():
-
-    auth0.authorize_access_token()
-    resp = auth0.get('token')
-    print(auth0)
-    print(resp)
-    return resp
-
-
 
 @app.route('/movie-list')
-# @requires_auth('read:movies')
-def show_movies():
+@requires_auth('read:movies')
+def show_movies(payload):
     try:
         movies = Movie.query.all()
         movies = [movie.format() for movie in movies]
@@ -188,8 +177,8 @@ def get_all_actors(payload):
 
 
 @app.route('/actor-list')
-# @requires_auth('read:actors')
-def get_actors():
+@requires_auth('read:actors')
+def get_actors(payload):
     try:
         actors = Actor.query.all()
         actors = [actor.format() for actor in actors]
@@ -200,37 +189,45 @@ def get_actors():
 @app.route('/actors', methods=['POST'])
 @requires_auth('write:actors')
 def add_actor(payload):
-    name = request.get_json().get('name')
-    gender = request.get_json().get('gender')
+    
     try:
+        name = request.get_json().get('name')
+        gender = request.get_json().get('gender')
         data = name and gender
         if not data:
             abort(400)
-    except (TypeError, KeyError):
+    except Exception:
         abort(400)
 
-    try:
-        Actor(name=name, gender=gender).insert()
-        return jsonify({
-            'success': True,
-            'actor': name
-        }), 201
-    except Exception:
-        abort(422)
+    # try:
+        
+    new_actor = Actor(name=name, gender=gender)
+    # new_actor
+    new_actor.insert()
+    actors = Actor.query.all()
+    formatted_actors = [actor.format() for actor in actors]
+    return jsonify({
+        'success': True,
+        'actor': formatted_actors
+    }), 201
+    # except Exception as e:
+    #     print(e)
+    #     abort(422)
 
 
 @app.route('/actors/<int:actor_id>', methods=['PATCH'])
 @requires_auth('update:actors')
 def edit_actor(payload, actor_id):
-    name = request.get_json().get('name')
-    gender = request.get_json().get('gender')
-
+    
     # make sure some data was passed
     try:
+        name = request.get_json().get('name')
+        gender = request.get_json().get('gender')
+
         data = name or gender
         if not data:
             abort(400)
-    except (TypeError, KeyError):
+    except Exception:
         abort(400)
 
     # make sure actor exists

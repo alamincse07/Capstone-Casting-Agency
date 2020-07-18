@@ -22,7 +22,10 @@ def setup_db(app, database_path=database_path):
 
 
 def db_drop_and_create_all():
-    pass
+    """drops the database tables and starts fresh
+    can be used to initialize a clean database"""
+    db.drop_all()
+    db.create_all()
 
 
 linking_table = Table('linking_table', db.Model.metadata, Column('movie_id', Integer, ForeignKey('movies.id')), Column('actor_id', Integer, ForeignKey('actors.id')))

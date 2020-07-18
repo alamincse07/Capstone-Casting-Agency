@@ -70,7 +70,7 @@ def get_token_auth_header():
 
 def check_permissions(permission, payload):
     if permission and permission not in payload['permissions']:
-        abort(401)
+        raise AuthError('unauthorized', 403)
     return permission
 
 
@@ -140,14 +140,12 @@ def requires_auth(permission=''):
                 token = get_token_auth_header()
             except Exception as e:
 
-                print(e)
                 abort(401)
 
             try:
                 payload = verify_decode_jwt(token)
             except Exception as e:
 
-                print(e)
                 abort(401)
             check_permissions(permission, payload)
             return f(payload, *args, **kwargs)

@@ -73,19 +73,6 @@ function processPermission(){
   }
 }
 
-//  else {
-  
-//   // document.querySelectorAll('.card-footer').forEach(e => e.remove());
-//   // document.getElementById('addActorButton').remove();
-//   // document.getElementById('addMovieButton').remove();
-//   // document.getElementById('logoutButton').remove();
-//   // document.getElementById('movieLink').remove();
-//   // document.getElementById('actorLink').remove();
-//   // if (window.location.pathname !== '/') {
-//   //   window.location.replace('/')
-//   // }
-// }
-
 
 var addMovie = document.getElementById("addMovieButton");
 if (addMovie) {
@@ -147,7 +134,8 @@ const submitActor = async () => {
   try {
     const data = await sendData("/actors", formData, "POST");
     if (data.success) {
-      location.href = '/actor-list';
+      
+      loadActor();
     } else {
       throw data.message;
     }
@@ -166,7 +154,8 @@ const submitMovie = async () => {
   try {
     const data = await sendData("/movies", formData, "POST");
     if (data.success) {
-      location.href = '/movie-list';
+      
+      loadMovie();
     } else {
       throw data.message;
     }
@@ -206,7 +195,8 @@ const editMovie = async () => {
   try {
     const data = await sendData(`/movies/${formData.get('id')}`, formData, "PATCH");
     if (data.success) {
-      location.href = '/movie-list';
+      
+      loadMovie();
     } else {
       throw data.message;
     }
@@ -224,7 +214,8 @@ const deleteMovie = async (movieId) => {
     if (confirm("Are you sure to delete?")) {
       const data = await sendData(`/movies/${movieId}`, '', "DELETE");
       if (data.success) {
-        location.href = '/movie-list';
+        
+        loadMovie();
       } else {
         throw data.message;
       }
@@ -245,7 +236,8 @@ const editActor = async () => {
   try {
     const data = await sendData(`/actors/${formData.get('id')}`, formData, "PATCH");
     if (data.success) {
-      location.href = '/actor-list';
+      
+      loadActor();
     } else {
       throw data.message;
     }
@@ -263,7 +255,8 @@ const deleteActor = async (actorId) => {
     if (confirm("Are you sure to delete?")) {
       const data = await sendData(`/actors/${actorId}`, '', "DELETE");
       if (data.success) {
-        location.href = '/actor-list';
+        
+        loadActor();
       } else {
         throw data.message;
       }
@@ -279,7 +272,7 @@ const deleteActor = async (actorId) => {
 // logout
 const logOut = () => {
   localStorage.clear();
-  window.location.href = 'https://dev-wsb8jitr.auth0.com/v2/logout'
+  window.location.href = '/logout'
 };
 
 
@@ -302,6 +295,7 @@ function loadActor(){
     return response.text().then(function (text) {
       document.getElementById('content').innerHTML = text;
       processPermission();
+      closemodal();
     });
   });
 }
@@ -319,6 +313,7 @@ function loadMovie(){
     return response.text().then(function (text) {
       document.getElementById('content').innerHTML = text;
       processPermission();
+      closemodal();
     });
   });
 }
