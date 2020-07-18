@@ -35,17 +35,17 @@
 </head>
 <body>
 
-{% set LoginUrl ='https://dev-alamin.us.auth0.com/authorize?audience=movie-agency&response_type=token&client_id=5c1se3IHIeuf20oP56zkYn0Noh9ZYgyZ&redirect_uri=http://localhost:8080/headers' %}
-{% set LogoutUrl ='https://dev-wsb8jitr.auth0.com/authorize?audience=casting_agency&response_type=token&client_id=K33oU7fu27mImUnefrOzLjNIikd2e72b&redirect_uri=https://udacity-casting-agency.herokuapp.com' %}
+{% set LoginUrl ='/login' %}
+{% set LogoutUrl ='/logout' %}
 
 <nav class="navbar" role="navigation" aria-label="main navigation">
 	<div id="" class="navbar-menu">
 		<div class="navbar-end">
 			
-					<a class="navbar-item lists" href="/movie-list" id="movieLink">
+					<a class="navbar-item lists" href="/#" id="movieLink">
 						Movies
 					</a>
-					<a class="navbar-item lists" href="/actor-list" id="actorLink">
+					<a class="navbar-item lists" href="/#" id="actorLink">
 						Actors
 					</a>
 			
